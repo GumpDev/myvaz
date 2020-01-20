@@ -1,2 +1,1 @@
-# myvaz
-MySql in JS Commands
+# MyVaz
