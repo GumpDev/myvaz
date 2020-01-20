@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 
 function Data(config,table,where){
-    const table_obj = config.tables[name];
+    const table_obj = config.tables[table];
     const columns   = Object.keys(table_obj);
 
     if(!where) where = "1=1";
