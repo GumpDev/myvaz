@@ -1,6 +1,9 @@
 const mysql = require('mysql2');
 
 function Data(config,table,where){
+    const table_obj = config.tables[name];
+    const columns   = Object.keys(table_obj);
+
     if(!where) where = "1=1";
     
     return{
@@ -49,7 +52,6 @@ function Data(config,table,where){
 
             const connection = mysql.createConnection(config.connection);
             connection.execute(sqlCommand,
-            values,
             (err)=>{
                 if(err) throw err;
             });
