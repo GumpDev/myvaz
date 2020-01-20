@@ -27,7 +27,7 @@ function Data(config,table,where){
 
             keys.forEach(key=>{
                 if(!columns.includes(key)){
-                    if(config.debug) console.log(`Column ${key} don't exists in the table ${name}`);
+                    if(config.debug) console.log(`Column ${key} don't exists in the table ${table}`);
                     return false;
                 } 
                 if(fields != "") fields += ", ";
