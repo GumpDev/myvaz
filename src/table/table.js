@@ -48,7 +48,7 @@ function Table(config,name){
                     setTimeout(() => {
                         if(err) reject(err);
                         else    resolve(retornValue);
-                    }, 50);
+                    }, 500);
                 });
                 connection.end();
             });
