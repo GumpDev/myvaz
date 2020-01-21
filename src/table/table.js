@@ -34,11 +34,11 @@ function Table(config,name){
     
                 if(keys.includes(primary)){
                     const where = (typeof(param[primary]) == "string") ? `${primary} = '${param[primary]}'` : `${primary} = ${param[primary]}`;
-                    retornValue = require("./data")(config,name,where);
+                    retornValue = require("./data")(config,name,where).get();
                 }
                 else{
                     const where = `${primary} = (SELECT max(${primary}) FROM ${name})`;
-                    retornValue = require("./data")(config,name,where);
+                    retornValue = require("./data")(config,name,where).get();
                 }
 
                 const connection = mysql.createConnection(config.connection);
