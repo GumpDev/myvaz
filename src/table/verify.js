@@ -1,6 +1,8 @@
 const mysql = require("mysql2");
 const fs    = require("fs");
 
+const customTypes = require("./customTypes");
+
 var table_cache = {};
 
 function verifyTable(config,table){
@@ -48,6 +50,15 @@ function updateTable(config,columns,table){
 
 function alterColumn(config,column,column_now,table){
     var column_props = config.tables[table][column];
+
+    if(typeof(column_props) == "string"){
+        if(Object.keys(customTypes).includes(column_props.toLowerCase()))
+            column_props = customTypes[column_props.toLowerCase()];
+    }else{
+        if(Object.keys(customTypes).includes(column_props.type.toLowerCase()))
+            column_props = customTypes[column_props.type.toLowerCase()];
+    }
+    
     var type,default_value,null_props,index,ai,comment;
     var sqlCommand = "";
 
@@ -99,6 +110,15 @@ function alterColumn(config,column,column_now,table){
 
 function createColumn(config,column,table){
     var column_props = config.tables[table][column];
+
+    if(typeof(column_props) == "string"){
+        if(Object.keys(customTypes).includes(column_props.toLowerCase()))
+            column_props = customTypes[column_props.toLowerCase()];
+    }else{
+        if(Object.keys(customTypes).includes(column_props.type.toLowerCase()))
+            column_props = customTypes[column_props.type.toLowerCase()];
+    }
+
     var type,default_value,null_props,index,ai,comment;
     var sqlCommand = "";
 

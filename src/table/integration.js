@@ -18,8 +18,8 @@ function Integration(config){
     const tables     = config.tables;
     const table_keys = Object.keys(tables);
 
-    connection.execute('SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_COMMENT = ?',
-    ['created_by_myvaz'],
+    connection.execute('SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_COMMENT = ? AND TABLE_SCHEMA = ?',
+    ['created_by_myvaz',config.connection.database],
     (err,result,fields)=>{
         if(err) throw err;
         deleteTables(config.connection,table_keys,result);
@@ -27,8 +27,8 @@ function Integration(config){
 
     table_keys.forEach(table_name=>{
         const table = tables[table_name];
-        connection.execute('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ?',
-        [table_name],
+        connection.execute('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
+        [table_name,config.connection.database],
         (err,result,fields)=>{
             if(err) throw err;
 

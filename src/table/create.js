@@ -1,6 +1,8 @@
 const mysql = require("mysql2");
 const fs    = require("fs");
 
+const customTypes = require("./customTypes");
+
 function createTable(config,table){
     var sqlCommand = `CREATE TABLE ${table} (\n`;
     
@@ -9,7 +11,15 @@ function createTable(config,table){
     
     columns.forEach(column=>{
         var column_props = table_value[column];
-
+        
+        if(typeof(column_props) == "string"){
+            if(Object.keys(customTypes).includes(column_props.toLowerCase()))
+                column_props = customTypes[column_props.toLowerCase()];
+        }else{
+            if(Object.keys(customTypes).includes(column_props.type.toLowerCase()))
+                column_props = customTypes[column_props.type.toLowerCase()];
+        }
+        
         if(columns[0] != column) sqlCommand += ",\n";
 
         var type,default_value,null_props,index,ai,comment;
@@ -34,7 +44,6 @@ function createTable(config,table){
         sqlCommand += `${column}${type}${null_props ? null_props : ''}${default_value ? default_value : ''}${index ? index : ''}${ai ? ai : ''}${comment ? comment : ''}`;
     });
     sqlCommand += ") COMMENT 'created_by_myvaz'";
-
     const connection = mysql.createConnection(config.connection);
     connection.execute(sqlCommand,
     (err,result,fields)=>{
