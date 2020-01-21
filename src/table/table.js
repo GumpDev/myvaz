@@ -31,24 +31,30 @@ function Table(config,name){
         
             return new Promise((resolve,reject)=>{
                 var retornValue = null;
-    
-                if(keys.includes(primary)){
-                    const where = (typeof(param[primary]) == "string") ? `${primary} = '${param[primary]}'` : `${primary} = ${param[primary]}`;
-                    retornValue = require("./data")(config,name,where).get();
-                }
-                else{
-                    const where = `${primary} = (SELECT max(${primary}) FROM ${name})`;
-                    retornValue = require("./data")(config,name,where).get();
-                }
 
                 const connection = mysql.createConnection(config.connection);
                 connection.execute(sqlCommand,
                 values,
                 (err)=>{
-                    setTimeout(() => {
-                        if(err) reject(err);
-                        else    resolve(retornValue);
-                    }, 500);
+                    if(err) reject(err);
+                    else{
+                        if(keys.includes(primary)){
+                            const where = (typeof(param[primary]) == "string") ? `${primary} = '${param[primary]}'` : `${primary} = ${param[primary]}`;
+                            resolve(require("./data")(config,name,where).get());
+                        }
+                        else{
+                            const connection2 = mysql.createConnection(config.connection);
+                            connection2.execute(`SELECT max(${primary}) as id FROM ${name}`,
+                            (err2,rows2)=>{
+                                if(err2) reject(err2);
+                                else {
+                                    const where = `${primary} = ${rows2[0]['id']}`;
+                                    resolve(require("./data")(config,name,where).get());
+                                }
+                            });
+                            connection2.end();
+                        }
+                    }    
                 });
                 connection.end();
             });
