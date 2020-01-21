@@ -6,7 +6,7 @@ function Table(config,name){
     const primary   = columns[columns.map(c=>{if(table[c].index) return table[c].index.toUpperCase()}).indexOf("PRIMARY KEY")];
 
     return{
-        create(param){
+        async create(param){
             const keys = Object.keys(param);
 
             var fields = "";
@@ -29,22 +29,28 @@ function Table(config,name){
             
             var sqlCommand = `INSERT INTO ${name}(${fields}) VALUES (${val})`;
         
-            const connection = mysql.createConnection(config.connection);
-            connection.execute(sqlCommand,
-            values,
-            (err)=>{
-                if(err) throw err;
-            });
-            connection.end();
+            return new Promise((resolve,reject)=>{
+                var retornValue = null;
+    
+                if(keys.includes(primary)){
+                    const where = (typeof(param[primary]) == "string") ? `${primary} = '${param[primary]}'` : `${primary} = ${param[primary]}`;
+                    retornValue = require("./data")(config,name,where);
+                }
+                else{
+                    const where = `${primary} = (SELECT max(${primary}) FROM ${name})`;
+                    retornValue = require("./data")(config,name,where);
+                }
 
-            if(keys.includes(primary)){
-                const where = (typeof(param[primary]) == "string") ? `${primary} = '${param[primary]}'` : `${primary} = ${param[primary]}`;
-                return require("./data")(config,name,where);
-            }
-            else{
-                const where = `${primary} = (SELECT max(${primary}) FROM ${name})`;
-                return require("./data")(config,name,where);
-            }
+                const connection = mysql.createConnection(config.connection);
+                connection.execute(sqlCommand,
+                values,
+                (err)=>{
+                    if(err) reject(err);
+                    else    resolve(retornValue);
+                });
+                connection.end();
+            });
+            
         },
         find(id){
             const where = (typeof(id) == "string") ? `${primary} = '${id}'` : `${primary} = ${id}`;

@@ -7,19 +7,21 @@ function Data(config,table,where){
     if(!where) where = "1=1";
     
     return{
-        get(callback){
+        async get(){
             const sqlCommand = `SELECT * FROM ${table} WHERE ${where}`;
-
-            const connection = mysql.createConnection(config.connection);
-            connection.execute(sqlCommand,
-            (err,rows)=>{
-                if(err) throw err;
-                callback(rows);
+    
+            return new Promise((resolve,reject)=>{
+                const connection = mysql.createConnection(config.connection);
+                connection.execute(sqlCommand,
+                (err,rows)=>{
+                    if(err) reject(err);
+                    else    resolve(rows);
+                });
+                connection.end();
             });
-            connection.end();
         },
 
-        edit(param){
+        async edit(param){
             const keys = Object.keys(param);
 
             var fields = "";
@@ -38,24 +40,30 @@ function Data(config,table,where){
 
             var sqlCommand = `UPDATE ${table} SET ${fields} WHERE ${where}`;
         
-            const connection = mysql.createConnection(config.connection);
-            connection.execute(sqlCommand,
-            values,
-            (err)=>{
-                if(err) throw err;
+            return new Promise((resolve,reject)=>{
+                const connection = mysql.createConnection(config.connection);
+                connection.execute(sqlCommand,
+                values,
+                (err)=>{
+                    if(err) reject(err);
+                    else    resolve();
+                });
+                connection.end();
             });
-            connection.end();
         },
 
-        delete(){
+        async delete(){
             const sqlCommand = `DELETE FROM ${table} WHERE ${where}`;
 
-            const connection = mysql.createConnection(config.connection);
-            connection.execute(sqlCommand,
-            (err)=>{
-                if(err) throw err;
+            return new Promise((resolve,reject)=>{
+                const connection = mysql.createConnection(config.connection);
+                connection.execute(sqlCommand,
+                (err)=>{
+                    if(err) reject(err);
+                    else    resolve();
+                });
+                connection.end();
             });
-            connection.end();
         }
     }
 }

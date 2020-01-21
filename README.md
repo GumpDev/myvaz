@@ -27,11 +27,19 @@ const MyVaz = require('myvaz');
 
 const myvaz = MyVaz({
     connection:{
-
+        host: 'localhost',
+        user: 'root',
+        password: 'SECRET (shiiii)',
+        database: 'my_table'
     },
-    tables:{
-        
-    },  //You can make your tables 
+    tables:{ /* Go To Table Session */ },  //You can make your tables 
     debug: true //This show messages in console, but it's unecessary
 });
 ```
+
+
+------------------------------
+
+### Table
+
+To start you need make this structure:
