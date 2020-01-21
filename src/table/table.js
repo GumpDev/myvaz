@@ -37,7 +37,7 @@ function Table(config,name){
                     retornValue = require("./data")(config,name,where).get();
                 }
                 else{
-                    const where = `${primary} = (SELECT max(${primary}) + 1 FROM ${name})`;
+                    const where = `${primary} = (SELECT max(${primary}) FROM ${name})`;
                     retornValue = require("./data")(config,name,where).get();
                 }
 
@@ -45,8 +45,10 @@ function Table(config,name){
                 connection.execute(sqlCommand,
                 values,
                 (err)=>{
-                    if(err) reject(err);
-                    else    resolve(retornValue);
+                    setTimeout(() => {
+                        if(err) reject(err);
+                        else    resolve(retornValue);
+                    }, 50);
                 });
                 connection.end();
             });
