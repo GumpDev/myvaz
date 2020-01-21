@@ -31,7 +31,18 @@ function Table(config,name){
             var PNam = null;
             var PVal = null;
             columns.forEach(c=>{
-                if(Object.keys(customTypes).includes(table[c].toLowerCase()) || (table[c].type && Object.keys(customTypes).includes(table[c].type.toLowerCase()))){
+                if(typeof(table[c]) == "string"){
+                    if(Object.keys(customTypes).includes(table[c].toLowerCase())){
+                        var type = null;
+                        if(typeof(table[c]) == "string") type = table[c];
+                        else type = table[c].type;
+                        
+                        if(customTypes[type].return){
+                            PNam = c;
+                            Pkey = customTypes[type].return;
+                        }
+                    }
+                }else if(Object.keys(customTypes).includes(table[c].type.toLowerCase())){
                     var type = null;
                     if(typeof(table[c]) == "string") type = table[c];
                     else type = table[c].type;
